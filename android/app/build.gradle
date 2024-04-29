@@ -2,6 +2,21 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+project.ext.envConfigFiles = [
+        localdebug:".env.local",
+        localrelease :".env.local",
+        devdebug: ".env.dev",
+        devrelease: ".env.dev",
+        qadebug:'.env.qa',
+        qarelease:'.env.qa',
+        proddebug:'.env.prod',
+        prodrelease:'.env.prod',
+]
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+def versionBuild = project.hasProperty('BUILD_NUMBER') ? "+" + project.findProperty('BUILD_NUMBER').toString() : "";
+
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -100,6 +115,43 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        local {
+            resValue "string", "app_name", "MyApp Debug"
+            applicationIdSuffix '.debug'
+            versionNameSuffix "-DEBUG"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+
+        }
+        dev {
+            resValue "string", "app_name", "MyApp Dev"
+            applicationIdSuffix '.dev'
+            versionNameSuffix "-DEV"+versionBuild
+            minSdkVersion rootProject.ext.minSdkVersion
+            applicationId "com.reactnativeproject.stage"
+            targetSdkVersion rootProject.ext.targetSdkVersion
+
+        }
+        qa {
+            resValue "string", "app_name", "MyApp Qa"
+            applicationIdSuffix '.qa'
+            versionNameSuffix "-QA"+versionBuild
+            minSdkVersion rootProject.ext.minSdkVersion
+            applicationId "com.reactnativeproject.stage"
+            targetSdkVersion rootProject.ext.targetSdkVersion
+
+        }
+        prod {
+           resValue "string", "app_name", "MyApp"
+            minSdkVersion rootProject.ext.minSdkVersion
+            applicationId "com.reactnativeproject.prod"
+            targetSdkVersion rootProject.ext.targetSdkVersion
+
         }
     }
 }
